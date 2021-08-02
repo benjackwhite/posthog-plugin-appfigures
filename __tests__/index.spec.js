@@ -12,43 +12,43 @@ import REVIEWS_RESPONSE from '../__test_data__/reviews.json'
 import SALES_RESPONSE from '../__test_data__/sales.json'
 
 describe('Posthog Plugin Appfigures (Unit)', () => {
-    beforeEach(() => {
-        resetMeta({
-            config: {
-                appfigures_username: 'test',
-                appfigures_password: 'test',
-                appfigures_client_key: 'test',
-                appfigures_product_ids: 'app1,app2',
-                appfigures_start_date: '2021-07-01',
-            },
-        })
+    describe('runEveryHour', () => {
+        beforeEach(() => {
+            resetMeta({
+                config: {
+                    appfigures_username: 'test',
+                    appfigures_password: 'test',
+                    appfigures_client_key: 'test',
+                    appfigures_product_ids: 'app1,app2',
+                    appfigures_start_date: '2021-07-01',
+                },
+            })
 
-        global.posthog = {
-            capture: jest.fn(),
-        }
-
-        fetch.mockImplementation((url, options) => {
-            let data = {}
-            if (url.includes('/v2/reviews')) {
-                data = REVIEWS_RESPONSE
-            }
-            if (url.includes('/v2/reports/ratings')) {
-                data = RATINGS_RESPONSE
-            }
-            if (url.includes('/v2/reports/sales')) {
-                data = SALES_RESPONSE
-            }
-            if (url.includes('/v2/reports/revenue')) {
-                data = REVENUE_RESPONSE
+            global.posthog = {
+                capture: jest.fn(),
             }
 
-            return Promise.resolve({
-                json: () => Promise.resolve(data),
+            fetch.mockImplementation((url, options) => {
+                let data = {}
+                if (url.includes('/v2/reviews')) {
+                    data = REVIEWS_RESPONSE
+                }
+                if (url.includes('/v2/reports/ratings')) {
+                    data = RATINGS_RESPONSE
+                }
+                if (url.includes('/v2/reports/sales')) {
+                    data = SALES_RESPONSE
+                }
+                if (url.includes('/v2/reports/revenue')) {
+                    data = REVENUE_RESPONSE
+                }
+
+                return Promise.resolve({
+                    json: () => Promise.resolve(data),
+                })
             })
         })
-    })
 
-    describe('runEveryHour', () => {
         it('should load all values from appfigures', async () => {
             await runEveryHour(getMeta())
 
@@ -76,9 +76,13 @@ describe('Posthog Plugin Appfigures (Unit)', () => {
             )
 
             expect(posthog.capture).toHaveBeenCalledTimes(8)
+        })
 
+        it('should trigger posthog capture for review data', async () => {
+            await runEveryHour(getMeta())
             expect(posthog.capture).toHaveBeenCalledWith('appfigures_review', {
                 author: 'Tom Jones',
+                timestamp: '2021-07-01T16:11:17',
                 date: '2021-07-01T16:11:17',
                 deleted: false,
                 has_response: false,
@@ -91,15 +95,20 @@ describe('Posthog Plugin Appfigures (Unit)', () => {
                 product_id: 123456,
                 product_name: 'My Product',
                 review: 'Toll gemacht!',
-                stars: '5.00',
+                stars: 5,
                 store: 'google_play',
                 title: '',
                 vendor_id: 'com.product.mine',
                 version: '1.2.3',
                 weight: 0,
             })
+        })
+
+        it('should trigger posthog capture for sales data', async () => {
+            await runEveryHour(getMeta())
 
             expect(posthog.capture).toHaveBeenCalledWith('appfigures_sales', {
+                timestamp: '2021-07-01T12:00:00',
                 downloads: 33,
                 re_downloads: 41,
                 uninstalls: 8,
@@ -107,65 +116,75 @@ describe('Posthog Plugin Appfigures (Unit)', () => {
                 returns: 0,
                 net_downloads: 33,
                 promos: 0,
-                revenue: '0.00',
-                returns_amount: '0.00',
+                revenue: 0,
+                returns_amount: 0,
                 edu_downloads: 0,
                 gifts: 0,
                 gift_redemptions: 0,
-                edu_revenue: '0.00',
-                gross_revenue: '0.00',
-                gross_returns_amount: '0.00',
-                gross_edu_revenue: '0.00',
+                edu_revenue: 0,
+                gross_revenue: 0,
+                gross_returns_amount: 0,
+                gross_edu_revenue: 0,
                 business_downloads: 0,
-                business_revenue: '0.00',
-                gross_business_revenue: '0.00',
+                business_revenue: 0,
+                gross_business_revenue: 0,
                 standard_downloads: 33,
-                standard_revenue: '0.00',
-                gross_standard_revenue: '0.00',
+                standard_revenue: 0,
+                gross_standard_revenue: 0,
                 app_downloads: 33,
                 app_returns: 0,
                 iap_amount: 0,
                 iap_returns: 0,
                 subscription_purchases: 0,
                 subscription_returns: 0,
-                app_revenue: '0.00',
-                app_returns_amount: '0.00',
-                gross_app_revenue: '0.00',
-                gross_app_returns_amount: '0.00',
-                iap_revenue: '0.00',
-                iap_returns_amount: '0.00',
-                gross_iap_revenue: '0.00',
-                gross_iap_returns_amount: '0.00',
-                subscription_revenue: '0.00',
-                subscription_returns_amount: '0.00',
-                gross_subscription_revenue: '0.00',
-                gross_subscription_returns_amount: '0.00',
+                app_revenue: 0,
+                app_returns_amount: 0,
+                gross_app_revenue: 0,
+                gross_app_returns_amount: 0,
+                iap_revenue: 0,
+                iap_returns_amount: 0,
+                gross_iap_revenue: 0,
+                gross_iap_returns_amount: 0,
+                subscription_revenue: 0,
+                subscription_returns_amount: 0,
+                gross_subscription_revenue: 0,
+                gross_subscription_returns_amount: 0,
                 product_id: 123456,
                 date: '2021-07-01',
             })
+        })
+
+        it('should trigger posthog capture for revenue data', async () => {
+            await runEveryHour(getMeta())
 
             expect(posthog.capture).toHaveBeenCalledWith('appfigures_revenue', {
-                ads: '0.00',
+                timestamp: '2021-07-01T12:00:00',
+                ads: 0,
                 date: '2021-07-01',
-                edu: '0.00',
-                gross_edu: '0.00',
-                gross_iap: '149.98',
-                gross_returns: '0.00',
-                gross_sales: '0.00',
-                gross_subscriptions: '0.00',
-                gross_total: '149.98',
-                iap: '107.12',
+                edu: 0,
+                gross_edu: 0,
+                gross_iap: 149.98,
+                gross_returns: 0,
+                gross_sales: 0,
+                gross_subscriptions: 0,
+                gross_total: 149.98,
+                iap: 107.12,
                 product_id: 123456,
-                returns: '0.00',
-                sales: '0.00',
-                subscriptions: '0.00',
-                total: '107.12',
+                returns: 0,
+                sales: 0,
+                subscriptions: 0,
+                total: 107.12,
             })
+        })
+
+        it('should trigger posthog capture for ratings data', async () => {
+            await runEveryHour(getMeta())
 
             expect(posthog.capture).toHaveBeenCalledWith('appfigures_ratings', {
+                timestamp: '2021-07-01T12:00:00',
                 breakdown: [26, 30, 67, 187, 717],
                 new: [0, 0, 0, 0, 0],
-                average: '4.50',
+                average: 4.5,
                 total: 1027,
                 new_average: 'NaN',
                 new_total: 0,

@@ -4,6 +4,18 @@ const APPFIGURES_URL = 'http://api.appfigures.com/v2'
 const APPFIGURES_METRICS = ['sales', 'revenue', 'ratings']
 const APPFIGURES_DEFAULT_START_DATE = '2021-07-01'
 
+// NOTE: This function converts all currencies from strings keys to integers so that Posthog is able to perform math
+const CURRENCY_REGEX = /^\d+\.\d+$/
+const _enrichCurrencies = (payload) => {
+    Object.keys(payload).forEach((key) => {
+        if (payload.hasOwnProperty(key) && CURRENCY_REGEX.test(payload[key])) {
+            payload[key] = parseFloat(payload[key])
+        }
+    })
+
+    return payload
+}
+
 const _request = async (config, path) => {
     const apiUrl = `${APPFIGURES_URL}${path}`
     const auth = Buffer.from(config.appfigures_username + ':' + config.appfigures_password).toString('base64')
@@ -28,7 +40,8 @@ const _sync_appfigures_metric = async (config, metric, products) => {
     for (const productId in res) {
         for (const date in res[productId]) {
             posthog.capture(`appfigures_${metric}`, {
-                ...res[productId][date],
+                ..._enrichCurrencies(res[productId][date]),
+                timestamp: `${date}T12:00:00`,
             })
         }
     }
@@ -59,7 +72,8 @@ const _sync_appfigures_reviews = async (config, products) => {
 
         for (const values of res['reviews']) {
             posthog.capture(`appfigures_review`, {
-                ...values,
+                ..._enrichCurrencies(values),
+                timestamp: values['date'],
             })
         }
     }

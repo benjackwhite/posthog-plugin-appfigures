@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  db:
+    environment:
+      POSTGRES_DB: posthog
+      POSTGRES_PASSWORD: posthog
+      POSTGRES_USER: posthog
+    image: postgres:alpine
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - 7432:5432
+  redis:
+    image: redis:alpine
+  posthog_web:
+    image: posthog/posthog
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./:/var/posthog/plugins/posthog-plugin-appfigures
+    environment:
+      DATABASE_URL: postgres://posthog:posthog@db:5432/posthog
+      IS_DOCKER: "true"
+      REDIS_URL: redis://redis:6379/
+      SECRET_KEY: NOT_SO_SECRET
+      DEBUG: "true"
+    links:
+      - db:db
+      - redis:redis
+    ports:
+      - 8000:8000
+
+volumes:
+  postgres-data:
