@@ -1,5 +1,5 @@
 import { getMeta, resetMeta } from '@posthog/plugin-scaffold/test/utils'
-import { runEveryHour } from '../index'
+import { runEveryDay } from '../index'
 
 import dotenv from 'dotenv'
 import { expect } from '@jest/globals'
@@ -29,12 +29,12 @@ describe('Posthog Plugin Appfigures (E2E)', () => {
         }
     })
 
-    describe('runEveryHour', () => {
+    describe('runEveryDay', () => {
         itIfEnvExists(
             'should load all values from appfigures',
             async () => {
                 const productId = parseInt(appfigures_product_ids.split(',')[0])
-                await runEveryHour(getMeta())
+                await runEveryDay(getMeta())
 
                 expect(posthog.capture).toHaveBeenCalledWith('appfigures_sales', {
                     app_downloads: expect.any(Number),

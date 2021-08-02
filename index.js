@@ -3,6 +3,7 @@ import fetch from 'node-fetch'
 const APPFIGURES_URL = 'http://api.appfigures.com/v2'
 const APPFIGURES_METRICS = ['sales', 'revenue', 'ratings']
 const APPFIGURES_DEFAULT_START_DATE = '2021-07-01'
+const DISTINCT_ID = 'plugin-appfigures'
 
 // NOTE: This function converts all currencies from strings keys to integers so that Posthog is able to perform math
 const CURRENCY_REGEX = /^\d+\.\d+$/
@@ -42,6 +43,7 @@ const _sync_appfigures_metric = async (config, metric, products) => {
             posthog.capture(`appfigures_${metric}`, {
                 ..._enrichCurrencies(res[productId][date]),
                 timestamp: `${date}T12:00:00`,
+                distinct_id: DISTINCT_ID,
             })
         }
     }
@@ -74,12 +76,13 @@ const _sync_appfigures_reviews = async (config, products) => {
             posthog.capture(`appfigures_review`, {
                 ..._enrichCurrencies(values),
                 timestamp: values['date'],
+                distinct_id: DISTINCT_ID,
             })
         }
     }
 }
 
-export async function runEveryHour({ config }) {
+export async function runEveryDay({ config }) {
     const products = config.appfigures_product_ids
     for (const metric of APPFIGURES_METRICS) {
         await _sync_appfigures_metric(config, metric, products)

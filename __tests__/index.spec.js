@@ -4,7 +4,7 @@ jest.mock('node-fetch')
 
 import fetch from 'node-fetch'
 
-import { runEveryHour } from '../index'
+import { runEveryDay } from '../index'
 
 import RATINGS_RESPONSE from '../__test_data__/ratings.json'
 import REVENUE_RESPONSE from '../__test_data__/revenue.json'
@@ -12,7 +12,7 @@ import REVIEWS_RESPONSE from '../__test_data__/reviews.json'
 import SALES_RESPONSE from '../__test_data__/sales.json'
 
 describe('Posthog Plugin Appfigures (Unit)', () => {
-    describe('runEveryHour', () => {
+    describe('runEveryDay', () => {
         beforeEach(() => {
             resetMeta({
                 config: {
@@ -50,7 +50,7 @@ describe('Posthog Plugin Appfigures (Unit)', () => {
         })
 
         it('should load all values from appfigures', async () => {
-            await runEveryHour(getMeta())
+            await runEveryDay(getMeta())
 
             const commonOptions = {
                 headers: { Authorization: 'Basic dGVzdDp0ZXN0', 'X-Client-Key': 'test' },
@@ -79,8 +79,9 @@ describe('Posthog Plugin Appfigures (Unit)', () => {
         })
 
         it('should trigger posthog capture for review data', async () => {
-            await runEveryHour(getMeta())
+            await runEveryDay(getMeta())
             expect(posthog.capture).toHaveBeenCalledWith('appfigures_review', {
+                distinct_id: 'plugin-appfigures',
                 author: 'Tom Jones',
                 timestamp: '2021-07-01T16:11:17',
                 date: '2021-07-01T16:11:17',
@@ -105,9 +106,10 @@ describe('Posthog Plugin Appfigures (Unit)', () => {
         })
 
         it('should trigger posthog capture for sales data', async () => {
-            await runEveryHour(getMeta())
+            await runEveryDay(getMeta())
 
             expect(posthog.capture).toHaveBeenCalledWith('appfigures_sales', {
+                distinct_id: 'plugin-appfigures',
                 timestamp: '2021-07-01T12:00:00',
                 downloads: 33,
                 re_downloads: 41,
@@ -155,9 +157,10 @@ describe('Posthog Plugin Appfigures (Unit)', () => {
         })
 
         it('should trigger posthog capture for revenue data', async () => {
-            await runEveryHour(getMeta())
+            await runEveryDay(getMeta())
 
             expect(posthog.capture).toHaveBeenCalledWith('appfigures_revenue', {
+                distinct_id: 'plugin-appfigures',
                 timestamp: '2021-07-01T12:00:00',
                 ads: 0,
                 date: '2021-07-01',
@@ -178,9 +181,10 @@ describe('Posthog Plugin Appfigures (Unit)', () => {
         })
 
         it('should trigger posthog capture for ratings data', async () => {
-            await runEveryHour(getMeta())
+            await runEveryDay(getMeta())
 
             expect(posthog.capture).toHaveBeenCalledWith('appfigures_ratings', {
+                distinct_id: 'plugin-appfigures',
                 timestamp: '2021-07-01T12:00:00',
                 breakdown: [26, 30, 67, 187, 717],
                 new: [0, 0, 0, 0, 0],
