@@ -1,0 +1,53 @@
+{
+  "total": 2,
+  "pages": 1,
+  "this_page": 1,
+  "reviews": [
+    {
+      "author": "Tom Jones",
+      "title": "",
+      "review": "Toll gemacht!",
+      "original_title": "",
+      "original_review": "Toll gemacht!",
+      "stars": "5.00",
+      "iso": "ZZ",
+      "version": "1.2.3",
+      "date": "2021-07-01T16:11:17",
+      "deleted": false,
+      "has_response": false,
+      "product": 123456,
+      "product_id": 123456,
+      "product_name": "My Product",
+      "vendor_id": "com.product.mine",
+      "store": "google_play",
+      "weight": 0,
+      "id": "123456-1",
+      "predicted_langs": [
+        "de"
+      ]
+    },
+    {
+      "author": "Ben White",
+      "title": "4 Sterne",
+      "review": "Super App",
+      "original_title": "4 Sterne",
+      "original_review": "Super App",
+      "stars": "4.00",
+      "iso": "DE",
+      "version": "2.1.3",
+      "date": "2021-07-19T15:28:54",
+      "deleted": false,
+      "has_response": false,
+      "product": 123456,
+      "product_id": 123456,
+      "product_name": "My Product",
+      "vendor_id": "com.product.mine",
+      "store": "apple",
+      "weight": 0,
+      "id": "123456-2",
+      "predicted_langs": [
+        "de"
+      ]
+    }
+  ]
+}

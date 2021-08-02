@@ -1,0 +1,38 @@
+{
+  "123456": {
+    "2021-07-01": {
+      "sales": "0.00",
+      "iap": "107.12",
+      "returns": "0.00",
+      "edu": "0.00",
+      "ads": "0.00",
+      "total": "107.12",
+      "gross_sales": "0.00",
+      "gross_iap": "149.98",
+      "gross_edu": "0.00",
+      "gross_returns": "0.00",
+      "gross_total": "149.98",
+      "subscriptions": "0.00",
+      "gross_subscriptions": "0.00",
+      "product_id": 123456,
+      "date": "2021-07-01"
+    },
+    "2021-07-02": {
+      "sales": "0.00",
+      "iap": "107.12",
+      "returns": "0.00",
+      "edu": "0.00",
+      "ads": "0.00",
+      "total": "107.12",
+      "gross_sales": "0.00",
+      "gross_iap": "149.98",
+      "gross_edu": "0.00",
+      "gross_returns": "0.00",
+      "gross_total": "149.98",
+      "subscriptions": "0.00",
+      "gross_subscriptions": "0.00",
+      "product_id": 123456,
+      "date": "2021-07-02"
+    }
+  }
+}

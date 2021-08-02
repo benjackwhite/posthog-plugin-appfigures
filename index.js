@@ -47,6 +47,7 @@ const _sync_appfigures_reviews = async (config, products) => {
             config,
             `/reviews?page=${currentPage}&products=${products}&count=250&start=${startDate}`
         )
+
         // Res: { 'total': 27, 'pages': 1, 'this_page': 1, 'reviews': [...] }
 
         if (res['this_page'] < res['pages']) {
