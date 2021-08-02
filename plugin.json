@@ -1,0 +1,39 @@
+{
+    "name": "Appfigures sync",
+    "url": "https://github.com/benjackwhite/posthog-plugin-appfigures",
+    "description": "Sync Appfigures data to Posthog",
+    "main": "index.js",
+    "config": [
+        {
+            "key": "appfigures_client_key",
+            "name": "Appfigures API Client Key",
+            "type": "string",
+            "required": true
+        },
+        {
+            "key": "appfigures_username",
+            "name": "Appfigures Username",
+            "type": "string",
+            "required": true
+        },
+        {
+            "key": "appfigures_password",
+            "name": "Appfigures Password",
+            "type": "string",
+            "required": true
+        },
+        {
+            "key": "appfigures_product_ids",
+            "name": "Appfigures Product ID(s) split by a comma",
+            "type": "string",
+            "required": true
+        },
+
+        {
+            "key": "appfigures_start_date",
+            "name": "ISO date for how far back to sync data from (YYYY-MM-dd)",
+            "type": "string",
+            "required": false
+        }
+    ]
+}
