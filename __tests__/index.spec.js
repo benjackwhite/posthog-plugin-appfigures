@@ -4,51 +4,56 @@ jest.mock('node-fetch')
 
 import fetch from 'node-fetch'
 
-import { runEveryDay } from '../index'
+import { runEveryDay, runEveryHour } from '../index'
+import { createMockCache } from './helpers.spec'
 
 import RATINGS_RESPONSE from '../__test_data__/ratings.json'
 import REVENUE_RESPONSE from '../__test_data__/revenue.json'
 import REVIEWS_RESPONSE from '../__test_data__/reviews.json'
 import SALES_RESPONSE from '../__test_data__/sales.json'
 
+const reset = () => {
+    const mockStore = {}
+
+    resetMeta({
+        config: {
+            appfigures_username: 'test',
+            appfigures_password: 'test',
+            appfigures_client_key: 'test',
+            appfigures_product_ids: 'app1,app2',
+            appfigures_start_date: '2021-07-01',
+        },
+        cache: createMockCache(),
+    })
+
+    global.posthog = {
+        capture: jest.fn(),
+    }
+
+    fetch.mockImplementation((url, options) => {
+        let data = {}
+        if (url.includes('/v2/reviews')) {
+            data = REVIEWS_RESPONSE
+        }
+        if (url.includes('/v2/reports/ratings')) {
+            data = RATINGS_RESPONSE
+        }
+        if (url.includes('/v2/reports/sales')) {
+            data = SALES_RESPONSE
+        }
+        if (url.includes('/v2/reports/revenue')) {
+            data = REVENUE_RESPONSE
+        }
+
+        return Promise.resolve({
+            json: () => Promise.resolve(data),
+        })
+    })
+}
+
 describe('Posthog Plugin Appfigures (Unit)', () => {
     describe('runEveryDay', () => {
-        beforeEach(() => {
-            resetMeta({
-                config: {
-                    appfigures_username: 'test',
-                    appfigures_password: 'test',
-                    appfigures_client_key: 'test',
-                    appfigures_product_ids: 'app1,app2',
-                    appfigures_start_date: '2021-07-01',
-                },
-            })
-
-            global.posthog = {
-                capture: jest.fn(),
-            }
-
-            fetch.mockImplementation((url, options) => {
-                let data = {}
-                if (url.includes('/v2/reviews')) {
-                    data = REVIEWS_RESPONSE
-                }
-                if (url.includes('/v2/reports/ratings')) {
-                    data = RATINGS_RESPONSE
-                }
-                if (url.includes('/v2/reports/sales')) {
-                    data = SALES_RESPONSE
-                }
-                if (url.includes('/v2/reports/revenue')) {
-                    data = REVENUE_RESPONSE
-                }
-
-                return Promise.resolve({
-                    json: () => Promise.resolve(data),
-                })
-            })
-        })
-
+        beforeEach(() => reset())
         it('should load all values from appfigures', async () => {
             await runEveryDay(getMeta())
 
@@ -70,46 +75,14 @@ describe('Posthog Plugin Appfigures (Unit)', () => {
                 commonOptions
             )
 
-            expect(fetch).toHaveBeenCalledWith(
-                'http://api.appfigures.com/v2/reviews?page=1&products=app1,app2&count=250&start=2021-07-01',
-                commonOptions
-            )
-
-            expect(posthog.capture).toHaveBeenCalledTimes(8)
-        })
-
-        it('should trigger posthog capture for review data', async () => {
-            await runEveryDay(getMeta())
-            expect(posthog.capture).toHaveBeenCalledWith('appfigures_review', {
-                distinct_id: 'plugin-appfigures',
-                author: 'Tom Jones',
-                timestamp: '2021-07-01T16:11:17',
-                date: '2021-07-01T16:11:17',
-                deleted: false,
-                has_response: false,
-                id: '123456-1',
-                iso: 'ZZ',
-                original_review: 'Toll gemacht!',
-                original_title: '',
-                predicted_langs: ['de'],
-                product: 123456,
-                product_id: 123456,
-                product_name: 'My Product',
-                review: 'Toll gemacht!',
-                stars: 5,
-                store: 'google_play',
-                title: '',
-                vendor_id: 'com.product.mine',
-                version: '1.2.3',
-                weight: 0,
-            })
+            expect(posthog.capture).toHaveBeenCalledTimes(6)
         })
 
         it('should trigger posthog capture for sales data', async () => {
             await runEveryDay(getMeta())
 
             expect(posthog.capture).toHaveBeenCalledWith('appfigures_sales', {
-                distinct_id: 'plugin-appfigures',
+                distinct_id: 'plugin-appfigures-sales',
                 timestamp: '2021-07-01T12:00:00',
                 downloads: 33,
                 re_downloads: 41,
@@ -160,7 +133,7 @@ describe('Posthog Plugin Appfigures (Unit)', () => {
             await runEveryDay(getMeta())
 
             expect(posthog.capture).toHaveBeenCalledWith('appfigures_revenue', {
-                distinct_id: 'plugin-appfigures',
+                distinct_id: 'plugin-appfigures-revenue',
                 timestamp: '2021-07-01T12:00:00',
                 ads: 0,
                 date: '2021-07-01',
@@ -184,7 +157,7 @@ describe('Posthog Plugin Appfigures (Unit)', () => {
             await runEveryDay(getMeta())
 
             expect(posthog.capture).toHaveBeenCalledWith('appfigures_ratings', {
-                distinct_id: 'plugin-appfigures',
+                distinct_id: 'plugin-appfigures-ratings',
                 timestamp: '2021-07-01T12:00:00',
                 breakdown: [26, 30, 67, 187, 717],
                 new: [0, 0, 0, 0, 0],
@@ -200,6 +173,51 @@ describe('Posthog Plugin Appfigures (Unit)', () => {
                 new_neutral: 0,
                 product_id: 123456,
                 date: '2021-07-01',
+            })
+        })
+    })
+
+    describe('runEveryHour', () => {
+        beforeEach(() => reset())
+        it('should load all reviews from appfigures', async () => {
+            await runEveryHour(getMeta())
+
+            const commonOptions = {
+                headers: { Authorization: 'Basic dGVzdDp0ZXN0', 'X-Client-Key': 'test' },
+            }
+
+            expect(fetch).toHaveBeenCalledWith(
+                'http://api.appfigures.com/v2/reviews?page=1&products=app1,app2&count=250&start=2021-07-01',
+                commonOptions
+            )
+
+            expect(posthog.capture).toHaveBeenCalledTimes(2)
+        })
+
+        it('should trigger posthog capture for review data', async () => {
+            await runEveryHour(getMeta())
+            expect(posthog.capture).toHaveBeenCalledWith('appfigures_review', {
+                distinct_id: 'plugin-appfigures-reviews',
+                author: 'Tom Jones',
+                timestamp: '2021-07-01T16:11:17',
+                date: '2021-07-01T16:11:17',
+                deleted: false,
+                has_response: false,
+                id: '123456-1',
+                iso: 'ZZ',
+                original_review: 'Toll gemacht!',
+                original_title: '',
+                predicted_langs: ['de'],
+                product: 123456,
+                product_id: 123456,
+                product_name: 'My Product',
+                review: 'Toll gemacht!',
+                stars: 5,
+                store: 'google_play',
+                title: '',
+                vendor_id: 'com.product.mine',
+                version: '1.2.3',
+                weight: 0,
             })
         })
     })

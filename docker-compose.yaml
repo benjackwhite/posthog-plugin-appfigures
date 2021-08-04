@@ -9,8 +9,6 @@ services:
     image: postgres:alpine
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    ports:
-      - 7432:5432
   redis:
     image: redis:alpine
   posthog_web:
