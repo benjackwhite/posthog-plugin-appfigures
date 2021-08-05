@@ -12,6 +12,11 @@ Posthog plugin that syncs data from Appfigures to Posthog
 3. Head to the Advanced tab.
 4. "Install from GitHub, GitLab or npm" using this repository's URL.
 
+# Configuration
+1. Create an API client in AppFigures https://appfigures.com/developers/keys
+2. Configure the previous installed plugin with the created `client_key` and your Appfigures `username` and `password` (These three things are required for their API authentication)
+3. Add the ProductIds you wish to sync. You can find these IDs by hovering over the app in the "My Apps" section of Appfigures https://appfigures.com/account/apps
+
 # Usage
 
 The plugin will sync a range of datasets to Posthog under event names `appfigures_X`. 
