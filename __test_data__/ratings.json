@@ -1,0 +1,60 @@
+{
+  "123456": {
+    "2021-07-01": {
+      "breakdown": [
+        26,
+        30,
+        67,
+        187,
+        717
+      ],
+      "new": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "average": "4.50",
+      "total": 1027,
+      "new_average": "NaN",
+      "new_total": 0,
+      "positive": 904,
+      "negative": 56,
+      "neutral": 67,
+      "new_positive": 0,
+      "new_negative": 0,
+      "new_neutral": 0,
+      "product_id": 123456,
+      "date": "2021-07-01"
+    },
+    "2021-07-02": {
+      "breakdown": [
+        26,
+        30,
+        67,
+        187,
+        717
+      ],
+      "new": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "average": "4.50",
+      "total": 1027,
+      "new_average": "NaN",
+      "new_total": 0,
+      "positive": 904,
+      "negative": 56,
+      "neutral": 67,
+      "new_positive": 0,
+      "new_negative": 0,
+      "new_neutral": 0,
+      "product_id": 123456,
+      "date": "2021-07-02"
+    }
+  }
+}

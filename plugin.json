@@ -8,6 +8,7 @@
             "key": "appfigures_client_key",
             "name": "Appfigures API Client Key",
             "type": "string",
+            "secret": true,
             "required": true
         },
         {
@@ -20,6 +21,7 @@
             "key": "appfigures_password",
             "name": "Appfigures Password",
             "type": "string",
+            "secret": true,
             "required": true
         },
         {
