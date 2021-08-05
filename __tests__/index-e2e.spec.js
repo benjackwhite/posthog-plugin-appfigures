@@ -28,6 +28,7 @@ describe('Posthog Plugin Appfigures (E2E)', () => {
                 appfigures_client_key,
                 appfigures_product_ids,
                 appfigures_start_date: nDaysAgoString,
+                appfigures_datasets: 'all',
             },
             cache: createMockCache(),
         })

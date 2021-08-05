@@ -5,13 +5,6 @@
     "main": "index.js",
     "config": [
         {
-            "key": "appfigures_client_key",
-            "name": "Appfigures API Client Key",
-            "type": "string",
-            "secret": true,
-            "required": true
-        },
-        {
             "key": "appfigures_username",
             "name": "Appfigures Username",
             "type": "string",
@@ -25,17 +18,39 @@
             "required": true
         },
         {
+            "key": "appfigures_client_key",
+            "name": "Appfigures API Client Key",
+            "type": "string",
+            "secret": true,
+            "required": true
+        },
+        {
             "key": "appfigures_product_ids",
             "name": "Appfigures Product ID(s) split by a comma",
             "type": "string",
             "required": true
         },
-
         {
             "key": "appfigures_start_date",
             "name": "ISO date for how far back to sync data from (YYYY-MM-dd)",
             "type": "string",
-            "required": false
+            "required": false,
+            "default": "2001-01-01"
+        },
+        {
+            "key": "appfigures_datasets",
+            "name": "Datasets to sync from Appfigures",
+            "hint": "By default 'all' will sync every dataset that is supported",
+            "type": "choice",
+            "required": false,
+            "default": "all",
+            "choices": [
+                "all",
+                "reviews",
+                "revenue",
+                "sales",
+                "ratings"
+            ]
         }
     ]
 }

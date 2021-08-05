@@ -2,7 +2,7 @@ import fetch from 'node-fetch'
 
 const APPFIGURES_URL = 'http://api.appfigures.com/v2'
 const APPFIGURES_METRICS = ['sales', 'revenue', 'ratings']
-const APPFIGURES_DEFAULT_START_DATE = '2020-01-01'
+const APPFIGURES_DEFAULT_START_DATE = '2001-01-01'
 const DISTINCT_ID_PREFIX = 'plugin-appfigures'
 
 const REDIS_PREFIX_LIST = (key) => `af-list-${key}`
@@ -101,11 +101,7 @@ const _sync_appfigures_reviews = async (plugin, products) => {
         currentPage += 1
 
         const path = `/reviews?page=${currentPage}&products=${products}&count=250&start=${latestIngestedDate}`
-        console.log(`Loading reviews: ${path}`)
-
         const res = await _request(config, path)
-
-        // Res: { 'total': 27, 'pages': 1, 'this_page': 1, 'reviews': [...] }
 
         if (res['this_page'] < res['pages']) {
             moreToLoad = true
@@ -136,13 +132,20 @@ const _sync_appfigures_reviews = async (plugin, products) => {
 }
 
 export async function runEveryHour(plugin) {
-    const products = plugin.config.appfigures_product_ids
-    await _sync_appfigures_reviews(plugin, products)
+    const { appfigures_product_ids, appfigures_datasets } = plugin.config
+
+    if (['all', 'reviews'].includes(appfigures_datasets)) {
+        await _sync_appfigures_reviews(plugin, appfigures_product_ids)
+    }
 }
 
 export async function runEveryDay(plugin) {
-    const products = plugin.config.appfigures_product_ids
-    for (const metric of APPFIGURES_METRICS) {
-        await _sync_appfigures_metric(plugin, metric, products)
+    const { appfigures_product_ids, appfigures_datasets } = plugin.config
+
+    const metricsToSync =
+        appfigures_datasets === 'all' ? APPFIGURES_METRICS : APPFIGURES_METRICS.filter((x) => x === appfigures_datasets)
+
+    for (const metric of metricsToSync) {
+        await _sync_appfigures_metric(plugin, metric, appfigures_product_ids)
     }
 }
