@@ -140,10 +140,6 @@ export async function runEveryHour(plugin) {
     await _sync_appfigures_reviews(plugin, products)
 }
 
-export async function runEveryMinute(plugin) {
-    await runEveryDay(plugin)
-}
-
 export async function runEveryDay(plugin) {
     const products = plugin.config.appfigures_product_ids
     for (const metric of APPFIGURES_METRICS) {
