@@ -7,14 +7,12 @@ import fetch from 'node-fetch'
 import { runEveryDay, runEveryHour } from '../index'
 import { createMockCache } from './helpers.spec'
 
-import RATINGS_RESPONSE from '../__test_data__/ratings.json'
-import REVENUE_RESPONSE from '../__test_data__/revenue.json'
-import REVIEWS_RESPONSE from '../__test_data__/reviews.json'
-import SALES_RESPONSE from '../__test_data__/sales.json'
+import RATINGS_RESPONSE from './data/ratings.json'
+import REVENUE_RESPONSE from './data/revenue.json'
+import REVIEWS_RESPONSE from './data/reviews.json'
+import SALES_RESPONSE from './data/sales.json'
 
 const reset = () => {
-    const mockStore = {}
-
     resetMeta({
         config: {
             appfigures_username: 'test',
@@ -22,6 +20,7 @@ const reset = () => {
             appfigures_client_key: 'test',
             appfigures_product_ids: 'app1,app2',
             appfigures_start_date: '2021-07-01',
+            appfigures_datasets: 'all',
         },
         cache: createMockCache(),
     })
